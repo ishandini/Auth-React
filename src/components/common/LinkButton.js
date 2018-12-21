@@ -12,7 +12,7 @@ const LinkButton = ({onPress, children}) => {
     );
 };
 
-export default LinkButton;
+export { LinkButton };
 
 const styles = StyleSheet.create({
     buttonStyle: { 
