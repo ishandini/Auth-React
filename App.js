@@ -7,12 +7,14 @@
  */
 
 import React, {Component} from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, View} from 'react-native';
 import firebase from 'firebase';
-import { Header } from './src/components/common';
+import { Header, LinkButton, Spinner } from './src/components/common';
 import LoginForm from './src/components/LoginForm';
  
 export default class App extends Component {
+
+  state = {logIn: null};
 
   componentWillMount() {
     const config = {
@@ -24,24 +26,49 @@ export default class App extends Component {
       messagingSenderId: "993803492405"
     };
     firebase.initializeApp(config);
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({logIn: true});
+      } else {
+        this.setState({logIn: false});
+      }
+    });
+  }
+
+  renderContent() { 
+    switch (this.state.logIn) {
+      case true:
+        return(
+        <View style={styles.logOutStyle}>
+           <LinkButton onPress={() => {firebase.auth().signOut()} }>Log Out</LinkButton>
+        </View>
+               )
+      case false:
+        return <LoginForm />;
+      default:
+        return <Spinner />;
+    } 
   }
 
   render() {
     return (
       <View>
-        <Header headerText='Auth' />  
-        <LoginForm />
+        <Header headerText='Auth' />   
+        { this.renderContent() }
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  logOutStyle: {
+    marginTop: 50,
+    height: 44,
+    justifyContent: 'center', 
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    marginLeft: 10,
+    marginRight: 10,
   },
   
 });
